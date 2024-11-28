@@ -1,5 +1,5 @@
 # SQLMap Command Generator
-<img alt="SQLMap Command Generator" src="image_sqlmapcg.png"> </img>
+<img alt="SQLMap Command Generator By Darkie" src="image_sqlmapcg.png"> </img>
 
 ## Description
 
@@ -23,7 +23,7 @@ SQLMap Command Generator is a web-based application designed to assist penetrati
 
 ## Web Usage Live
 
-https://acorzo1983.github.io/SQLMapCG/
+https://darkie404.github.io/SQLMapCG/
 
 
 ## Installation & Usage
@@ -74,8 +74,6 @@ git clone https://github.com/Acorzo1983/SQLMapCG.git && cd SQLMapCG && chmod +x 
 - **Port Availability**: The script will check if ports 8082-8085 are available. If none of them are free, it will prompt you to choose another port.
 - **Permissions**: Ensure you have the required permissions to run the script and make the `run.sh` file executable.
 - **Dependencies**: The script assumes that `python3` and `firefox` are installed on your system.
-
-## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
