@@ -48,7 +48,7 @@ function generateCommand() {
     }
   });
   if (techniques) command += ` --technique=${techniques}`;
-  
+  // asset_service/ap/assets/search/vehicle/ABC123?validate=false&source=rto
   // Enumeration options
   const enumOptions = [
     'all', 'banner', 'current-user', 'current-db', 'passwords',
