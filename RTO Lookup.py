@@ -14,8 +14,7 @@ HEADERS = {
 
 COOKIES = {
     "trackerid": "9033febc-7256-4b84-9efb-fc99c9dfdf60",
-    "visit": "Hl1oyupruXl5pNZxqkdZSQ",
-    "user_id": "j3hMTZKo1oCf4RctlFxdgw:1733332955688:cc4982d8ea5d040043af07feae033e693b8ff953",
+    "user_id": "j3hMTZKo1oCf4RctlFxdgw:733332955688:cc4982d8ea5d040043af07feae033e693b8ff953",
     "__cf_bm": "3ThWHhh1QI7O4Xp8vN6iTmTlkmQkrDxs_Z3DQZhPzEM-1733509946-1.0.1.1-OM7X18upnfCvA1utZg7KWb3E7VhfRZ6MdUyfGZMLSaGRONG5XeKl8SfZI9_MVsbr_AMi2YPRByJROBtzyJ6g0A"
 }
 
