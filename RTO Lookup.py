@@ -1,10 +1,9 @@
 import requests
 import json
-import csv
-from tabulate import tabulate
+import os
 
 # API Configuration
-BASE_URL = "https://www.acko.com/asset_service/api/assets/search/vehicle/{vehicle_number}?validate=false&source=rto"
+BASE_URL = "https://www.com/asset_service/api/assets/search/vehicle/{vehicle_number}?validate=false&source=rto"
 
 HEADERS = {
     "Cache-Control": "max-age=0",
@@ -14,8 +13,8 @@ HEADERS = {
 }
 
 COOKIES = {
-    "trackerid": "33febc-7256-4b84-9efb-fc99c9dfdf60",
-    "acko_visit": "Hl1oyupruXl5pNZxqkdZSQ",
+    "trackerid": "9033febc-7256-4b84-9efb-fc99c9dfdf60",
+    "visit": "Hl1oyupruXl5pNZxqkdZSQ",
     "user_id": "j3hMTZKo1oCf4RctlFxdgw:1733332955688:cc4982d8ea5d040043af07feae033e693b8ff953",
     "__cf_bm": "3ThWHhh1QI7O4Xp8vN6iTmTlkmQkrDxs_Z3DQZhPzEM-1733509946-1.0.1.1-OM7X18upnfCvA1utZg7KWb3E7VhfRZ6MdUyfGZMLSaGRONG5XeKl8SfZI9_MVsbr_AMi2YPRByJROBtzyJ6g0A"
 }
@@ -35,68 +34,104 @@ def fetch_vehicle_data(vehicle_number):
         print(f"Error fetching data for {vehicle_number}: {e}")
         return None
 
-# Function to display data in a vertical table format for each vehicle
-def display_vertical_table(data, vehicle_number):
+# Function to save prioritized vehicle data into a text file
+def save_vehicle_data_to_file(vehicle_number, data):
     if not data:
-        print(f"No data for {vehicle_number}.")
+        print(f"No data available for {vehicle_number}.")
         return
 
-    print(f"\n--- Vehicle Details for {vehicle_number} ---")
+    # Prepare file name and path
+    file_name = f"{vehicle_number}.txt"
+    file_path = os.path.join(os.getcwd(), file_name)
 
-    # Creating a list of keys and values for the table (with prioritized order)
-    table = []
-    for key, value in data.items():
-        # If it's a nested dictionary or list, convert it to a string for display
-        if isinstance(value, dict) or isinstance(value, list):
-            value = json.dumps(value, indent=4)
-        # Add the entry to the table (long addresses will be shown fully)
-        table.append([key, value])
-    
-    # Display table using tabulate, with headers for "Field" and "Value"
-    print(tabulate(table, headers=["Field", "Value"], tablefmt="grid", numalign="left", stralign="left"))
+    # Improved field names for readability and prioritization
+    prioritized_fields = [
+        "asset_number",
+        "owner_name",
+        "registration_date",
+        "make_model",
+        "fuel_type",
+        "vehicle_type",
+        "registration_address",
+        "permanent_address",
+        "present_address",
+        "previous_policy_expiry_date",
+        "is_commercial"
+    ]
 
-# Function to save data to CSV
-def save_to_csv(data_list, output_file="vehicle_data.csv"):
+    field_mapping = {
+        "asset_number": "Vehicle Number",
+        "asset_type": "Vehicle Type",
+        "registration_year": "Registration Year",
+        "registration_month": "Registration Month",
+        "make_model": "Make Model",
+        "vehicle_type": "Vehicle Type",
+        "make_name": "Make Name",
+        "fuel_type": "Fuel Type",
+        "owner_name": "Owner Name",
+        "previous_insurer": "Previous Insurer",
+        "previous_policy_expiry_date": "Previous Policy Expiry Date",
+        "is_commercial": "Is Commercial",
+        "vehicle_type_v2": "Vehicle Type V2",
+        "vehicle_type_processed": "Vehicle Type Processed",
+        "permanent_address": "Permanent Address",
+        "present_address": "Present Address",
+        "registration_date": "Registration Date",
+        "registration_address": "Registration Address",
+        "model_name": "Model Name",
+        "make_name2": "Make Name (Detailed)",
+        "model_name2": "Model Name (Detailed)",
+        "variant_id": "Variant ID",
+        "previous_policy_expired": "Previous Policy Expired"
+    }
+
+    # Write prioritized data to the text file
     try:
-        with open(output_file, mode="w", newline="", encoding="utf-8") as file:
-            writer = csv.writer(file)
-            # Writing header (Fields)
-            writer.writerow(["Vehicle Number", "Field", "Value"])
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write(f"Vehicle Details for {vehicle_number}\n")
+            file.write("=" * 40 + "\n")
 
-            # Writing data for each vehicle
-            for data in data_list:
-                vehicle_number = data.get("vehicle_number", "N/A")
-                
-                # Write prioritized fields first
-                for key, value in data.items():
-                    if isinstance(value, dict) or isinstance(value, list):
+            for field in prioritized_fields:
+                if field in data:
+                    readable_key = field_mapping.get(field, field)
+                    value = data[field]
+                    # Format nested data
+                    if isinstance(value, list) or isinstance(value, dict):
                         value = json.dumps(value, indent=4)
-                    writer.writerow([vehicle_number, key, value])
+                    file.write(f"{readable_key}: {value}\n")
 
-        print(f"\n--- Data Saved to {output_file} ---")
+            file.write("\nAdditional Details:\n")
+            file.write("-" * 40 + "\n")
+            for key, value in data.items():
+                if key not in prioritized_fields:
+                    readable_key = field_mapping.get(key, key)
+                    # Format nested data
+                    if isinstance(value, list) or isinstance(value, dict):
+                        value = json.dumps(value, indent=4)
+                    file.write(f"{readable_key}: {value}\n")
+
+        # Display saved data in the terminal
+        print(f"\n--- Data for {vehicle_number} ---")
+        with open(file_path, "r", encoding="utf-8") as file:
+            print(file.read())
     except Exception as e:
-        print(f"Error saving to CSV: {e}")
+        print(f"Error saving data for {vehicle_number}: {e}")
 
 # Main function
 def main():
-    print("Enter vehicle numbers separated by commas (e.g., UP32DD1153,UP52BX6287):")
+    print("Enter vehicle numbers separated by commas (e.g., XY12AB1234,MH23DL9999):")
     user_input = input("> ")
     vehicle_numbers = [vn.strip() for vn in user_input.split(",") if vn.strip()]
     if not vehicle_numbers:
         print("No vehicle numbers provided. Exiting.")
         return
 
-    all_data = []
     for vehicle_number in vehicle_numbers:
         print(f"\nFetching details for {vehicle_number}...")
         data = fetch_vehicle_data(vehicle_number)
-        if data:
-            data["vehicle_number"] = vehicle_number  # Add vehicle number for clarity
-            all_data.append(data)
-            display_vertical_table(data, vehicle_number)  # Show data in vertical table for each vehicle
+        save_vehicle_data_to_file(vehicle_number, data)
 
-    if all_data:
-        save_to_csv(all_data)  # Save all data to CSV
+    input("\nPress <ENTER> to exit.")
 
 if __name__ == "__main__":
     main()
